@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Base.dev verification & attribution -->
+  <meta name="base:app_id" content="69a9396d0050dd24efcc1e16" />
+  <meta name="base:builder_code" content="bc_5s50punj" />
+  <title>MetricFlow — Farcaster Engagement on Base</title>
+  <meta name="description" content="MetricFlow is an agentic system that monitors Farcaster reactions and automatically rewards your community with ETH on Base chain." />
+  <meta property="og:title" content="MetricFlow" />
+  <meta property="og:description" content="Turn Farcaster likes & recasts into on-chain rewards on Base. Automatically." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --base-blue: #0052FF;
+      --electric: #00D4FF;
+      --acid: #ADFF2F;
+      --bg: #080A0E;
+      --bg2: #0D1117;
+      --surface: #141C26;
+      --border: rgba(0, 82, 255, 0.18);
+      --text: #E8EDF5;
+      --muted: #6B7A8D;
+      --font-display: 'Syne', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-display);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    .cursor {
+      width: 10px; height: 10px;
+      background: var(--base-blue);
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: screen;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(0,82,255,0.5);
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transition: all 0.18s ease;
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,82,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,82,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,10,14,0.85);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-logo {
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-logo-dot {
+      width: 8px; height: 8px;
+      background: var(--base-blue);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.4); }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--base-blue);
+      text-decoration: none;
+      border: 1px solid var(--base-blue);
+      padding: 8px 20px;
+      letter-spacing: 0.06em;
+      transition: all 0.2s;
+    }
+
+    .nav-cta:hover { background: var(--base-blue); color: #fff; }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 48px 80px;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .hero-orb {
+      position: absolute;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(0,82,255,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      animation: orb-drift 8s ease-in-out infinite;
+    }
+
+    @keyframes orb-drift {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-48%, -52%) scale(1.05); }
+    }
+
+    .hero-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--base-blue);
+      border: 1px solid rgba(0,82,255,0.3);
+      padding: 6px 14px;
+      display: inline-block;
+      margin-bottom: 32px;
+      animation: fade-up 0.8s ease both;
+    }
+
+    .hero-title {
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      font-weight: 800;
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      margin-bottom: 32px;
+      animation: fade-up 0.8s 0.1s ease both;
+    }
+
+    .hero-title em {
+      font-style: normal;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(0,82,255,0.6);
+    }
+
+    .hero-title .accent { color: var(--base-blue); }
+
+    .hero-sub {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+      animation: fade-up 0.8s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fade-up 0.8s 0.3s ease both;
+    }
+
+    .btn-primary {
+      background: var(--base-blue);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 14px 32px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 14px 32px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover { border-color: var(--base-blue); color: var(--base-blue); }
+
+    .hero-stats {
+      position: absolute;
+      right: 48px;
+      bottom: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .stat { text-align: right; }
+    .stat-num { font-size: 2rem; font-weight: 800; line-height: 1; }
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .ticker {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+      overflow: hidden;
+      background: var(--bg2);
+    }
+
+    .ticker-track {
+      display: flex;
+      gap: 64px;
+      animation: ticker 20s linear infinite;
+      white-space: nowrap;
+    }
+
+    .ticker-item {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .ticker-item span { color: var(--base-blue); margin-right: 8px; }
+
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 120px 48px;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--base-blue);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 64px;
+    }
+
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      padding-bottom: 16px;
+    }
+
+    .flow-node {
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 28px 32px;
+      min-width: 200px;
+      transition: border-color 0.3s;
+    }
+
+    .flow-node:hover { border-color: var(--base-blue); }
+    .flow-node-icon { font-size: 1.5rem; margin-bottom: 12px; }
+    .flow-node-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; }
+    .flow-node-desc { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); line-height: 1.5; }
+
+    .flow-arrow {
+      flex-shrink: 0;
+      width: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .flow-arrow::before {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--base-blue), transparent);
+      animation: flow-line 2s infinite;
+    }
+
+    @keyframes flow-line {
+      0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; }
+    }
+
+    .flow-arrow-head {
+      width: 0; height: 0;
+      border-left: 8px solid var(--base-blue);
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      margin-left: auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .feature-card {
+      background: var(--bg);
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--base-blue);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .feature-card:hover::before { transform: scaleX(1); }
+    .feature-card:hover { background: var(--surface); }
+    .feature-num { font-family: var(--font-mono); font-size: 0.65rem; color: var(--base-blue); letter-spacing: 0.15em; margin-bottom: 24px; }
+    .feature-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 14px; letter-spacing: -0.02em; }
+    .feature-desc { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); line-height: 1.7; }
+
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+    }
+
+    .stack-card {
+      border: 1px solid var(--border);
+      padding: 32px;
+      background: var(--bg);
+      transition: all 0.3s;
+    }
+
+    .stack-card:hover { border-color: var(--base-blue); transform: translateY(-4px); }
+    .stack-logo { font-size: 2rem; margin-bottom: 16px; }
+    .stack-name { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .stack-role { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); line-height: 1.6; }
+
+    .code-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .code-block {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 32px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.8;
+      position: relative;
+    }
+
+    .code-block::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--base-blue), transparent);
+    }
+
+    .code-bar { display: flex; gap: 6px; margin-bottom: 24px; }
+    .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .cd1 { background: #FF5F57; } .cd2 { background: #FEBC2E; } .cd3 { background: #28C840; }
+    .code-comment { color: #4A5568; }
+    .code-keyword { color: var(--base-blue); }
+    .code-string { color: var(--acid); }
+    .code-func { color: var(--electric); }
+
+    .cta-section {
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .cta-title {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 24px;
+    }
+
+    .cta-sub {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 48px;
+    }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 40px 48px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-left { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+    .footer-right { display: flex; gap: 24px; }
+    .footer-right a { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .footer-right a:hover { color: var(--base-blue); }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .hero { padding: 100px 24px 60px; }
+      .hero-stats { display: none; }
+      section { padding: 80px 24px; }
+      .code-layout { grid-template-columns: 1fr; }
+      footer { padding: 32px 24px; flex-direction: column; gap: 16px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="grid-bg"></div>
+
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-dot"></div>
+    MetricFlow
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how-it-works">How it works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#stack">Stack</a></li>
+  </ul>
+  <a href="https://github.com/isaaco3349/MetricFlow" target="_blank" class="nav-cta">View on GitHub</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-orb"></div>
+  <div>
+    <div class="hero-badge">Built on Base · Powered by AgentKit</div>
+    <h1 class="hero-title">
+      Social<br/>
+      <em>signals.</em><br/>
+      <span class="accent">On-chain</span><br/>
+      rewards.
+    </h1>
+    <p class="hero-sub">
+      MetricFlow monitors your Farcaster casts in real time.
+      Every like. Every recast. Automatically rewarded with ETH on Base.
+    </p>
+    <div class="hero-actions">
+      <a href="https://github.com/isaaco3349/MetricFlow" target="_blank" class="btn-primary">Get Started →</a>
+      <a href="#how-it-works" class="btn-secondary">See How It Works</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">~2s</div>
+      <div class="stat-label">Reaction to reward</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">Base</div>
+      <div class="stat-label">L2 — near zero fees</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Automated</div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-track">
+    <div class="ticker-item"><span>↗</span> Like detected on Farcaster</div>
+    <div class="ticker-item"><span>⛓</span> ETH sent on Base Sepolia</div>
+    <div class="ticker-item"><span>✓</span> Allowlist updated</div>
+    <div class="ticker-item"><span>↗</span> Recast detected on Farcaster</div>
+    <div class="ticker-item"><span>⛓</span> Reward confirmed on-chain</div>
+    <div class="ticker-item"><span>✓</span> Community member rewarded</div>
+    <div class="ticker-item"><span>↗</span> Like detected on Farcaster</div>
+    <div class="ticker-item"><span>⛓</span> ETH sent on Base Sepolia</div>
+    <div class="ticker-item"><span>✓</span> Allowlist updated</div>
+    <div class="ticker-item"><span>↗</span> Recast detected on Farcaster</div>
+    <div class="ticker-item"><span>⛓</span> Reward confirmed on-chain</div>
+    <div class="ticker-item"><span>✓</span> Community member rewarded</div>
+  </div>
+</div>
+
+<section id="how-it-works">
+  <div class="section-label reveal">// How It Works</div>
+  <h2 class="section-title reveal">Four steps.<br/>Zero manual work.</h2>
+  <div class="flow-diagram reveal">
+    <div class="flow-node">
+      <div class="flow-node-icon">📡</div>
+      <div class="flow-node-title">Farcaster Cast</div>
+      <div class="flow-node-desc">You post a cast on Farcaster via Warpcast</div>
+    </div>
+    <div class="flow-arrow"><div class="flow-arrow-head"></div></div>
+    <div class="flow-node">
+      <div class="flow-node-icon">🔔</div>
+      <div class="flow-node-title">Neynar Webhook</div>
+      <div class="flow-node-desc">Reaction detected in real-time via Neynar API</div>
+    </div>
+    <div class="flow-arrow"><div class="flow-arrow-head"></div></div>
+    <div class="flow-node">
+      <div class="flow-node-icon">🤖</div>
+      <div class="flow-node-title">MetricFlow Agent</div>
+      <div class="flow-node-desc">Agent validates reactor and triggers reward logic</div>
+    </div>
+    <div class="flow-arrow"><div class="flow-arrow-head"></div></div>
+    <div class="flow-node" style="border-color: rgba(0,82,255,0.4);">
+      <div class="flow-node-icon">⛓️</div>
+      <div class="flow-node-title">Base Chain</div>
+      <div class="flow-node-desc">ETH sent + user added to allowlist on Base</div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="section-label reveal">// Features</div>
+  <h2 class="section-title reveal">Built for builders.<br/>Loved by communities.</h2>
+  <div class="features-grid reveal">
+    <div class="feature-card">
+      <div class="feature-num">01 —</div>
+      <div class="feature-title">Real-time Detection</div>
+      <div class="feature-desc">Neynar webhooks fire the moment someone likes or recasts your post. No polling. No delays.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">02 —</div>
+      <div class="feature-title">Automatic ETH Rewards</div>
+      <div class="feature-desc">Coinbase AgentKit sends ETH directly to the reactor's verified Base wallet automatically.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">03 —</div>
+      <div class="feature-title">Smart Allowlisting</div>
+      <div class="feature-desc">Every rewarded user is added to a persistent allowlist for future token drops or gated access.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">04 —</div>
+      <div class="feature-title">Verified Addresses Only</div>
+      <div class="feature-desc">Only reactors with verified ETH addresses on Farcaster receive rewards. Sybil-resistant by design.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">05 —</div>
+      <div class="feature-title">Testnet First</div>
+      <div class="feature-desc">Start on Base Sepolia with free test ETH. Graduate to mainnet with one config change.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">06 —</div>
+      <div class="feature-title">Open Source</div>
+      <div class="feature-desc">Fully open on GitHub. Fork it, extend it, build on it. MIT licensed.</div>
+    </div>
+  </div>
+</section>
+
+<section id="stack" style="background: var(--bg2);">
+  <div class="section-label reveal">// Tech Stack</div>
+  <h2 class="section-title reveal">Best-in-class tools.<br/>Minimal complexity.</h2>
+  <div class="stack-grid">
+    <div class="stack-card reveal">
+      <div class="stack-logo">🟦</div>
+      <div class="stack-name">Base (L2)</div>
+      <div class="stack-role">Ethereum L2 by Coinbase. Near-zero fees, fast finality. Where all rewards land.</div>
+    </div>
+    <div class="stack-card reveal">
+      <div class="stack-logo">🤖</div>
+      <div class="stack-name">Coinbase AgentKit</div>
+      <div class="stack-role">The simplest way to send on-chain transactions programmatically via CDP.</div>
+    </div>
+    <div class="stack-card reveal">
+      <div class="stack-logo">🟣</div>
+      <div class="stack-name">Neynar</div>
+      <div class="stack-role">The leading Farcaster API. Real-time webhooks for reactions and user data.</div>
+    </div>
+    <div class="stack-card reveal">
+      <div class="stack-logo">🔷</div>
+      <div class="stack-name">TypeScript</div>
+      <div class="stack-role">Fully typed end-to-end. From webhook payload to on-chain transaction.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="code-layout">
+    <div class="reveal">
+      <div class="section-label">// Under the Hood</div>
+      <h2 class="section-title" style="margin-bottom: 24px;">Simple logic.<br/>Powerful results.</h2>
+      <p style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); line-height: 1.8; margin-bottom: 32px;">
+        MetricFlow is an "If This Then That" loop. A Farcaster reaction triggers the agent, validates the user, logs them to the allowlist, and fires an on-chain transaction — all in under 2 seconds.
+      </p>
+      <a href="https://github.com/isaaco3349/MetricFlow" target="_blank" class="btn-primary">Read the Source →</a>
+    </div>
+    <div class="code-block reveal">
+      <div class="code-bar">
+        <div class="code-dot cd1"></div>
+        <div class="code-dot cd2"></div>
+        <div class="code-dot cd3"></div>
+      </div>
+      <div>
+        <span class="code-comment">// rewardEngine.ts</span><br/><br/>
+        <span class="code-keyword">async function</span> <span class="code-func">processEvent</span>(<br/>
+        &nbsp;&nbsp;event: EngagementEvent<br/>
+        ) {<br/><br/>
+        &nbsp;&nbsp;<span class="code-comment">// Verify ETH address</span><br/>
+        &nbsp;&nbsp;<span class="code-keyword">if</span> (!event.reactorEthAddress)<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span> skip(<span class="code-string">"no_address"</span>);<br/><br/>
+        &nbsp;&nbsp;<span class="code-comment">// Add to allowlist</span><br/>
+        &nbsp;&nbsp;<span class="code-func">addToAllowlist</span>(event);<br/><br/>
+        &nbsp;&nbsp;<span class="code-comment">// Send ETH on Base</span><br/>
+        &nbsp;&nbsp;<span class="code-keyword">const</span> tx = <span class="code-keyword">await</span> <span class="code-func">sendReward</span>(<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;event.reactorEthAddress,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;config.rewardAmountWei<br/>
+        &nbsp;&nbsp;);<br/><br/>
+        &nbsp;&nbsp;<span class="code-keyword">return</span> { status: <span class="code-string">"sent"</span>, tx };<br/>
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="section-label reveal" style="margin-bottom: 24px;">// Get Started</div>
+  <h2 class="cta-title reveal">
+    Start rewarding<br/>
+    <span style="color: var(--base-blue);">your community</span><br/>
+    today.
+  </h2>
+  <p class="cta-sub reveal">Open source. Free to deploy. Built on Base.</p>
+  <div style="display:flex; gap:16px; justify-content:center;" class="reveal">
+    <a href="https://github.com/isaaco3349/MetricFlow" target="_blank" class="btn-primary">View on GitHub →</a>
+    <a href="https://base.org" target="_blank" class="btn-secondary">Learn about Base</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-left">© 2026 MetricFlow · Built on Base · MIT License</div>
+  <div class="footer-right">
+    <a href="https://github.com/isaaco3349/MetricFlow" target="_blank">GitHub</a>
+    <a href="https://base.org" target="_blank">Base</a>
+    <a href="https://neynar.com" target="_blank">Neynar</a>
+    <a href="https://docs.cdp.coinbase.com/agentkit" target="_blank">AgentKit</a>
+  </div>
+</footer>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx - 5 + 'px';
+    cursor.style.top = my - 5 + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx - 18) * 0.12;
+    ry += (my - ry - 18) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

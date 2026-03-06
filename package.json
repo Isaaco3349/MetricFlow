@@ -1,0 +1,32 @@
+{
+  "name": "metricflow",
+  "version": "0.1.0",
+  "description": "Farcaster engagement agent that rewards likes and recasts with ETH on Base",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "setup": "ts-node scripts/setup.ts"
+  },
+  "dependencies": {
+    "@coinbase/agentkit": "^0.3.0",
+    "@coinbase/agentkit-langchain": "^0.3.0",
+    "@neynar/nodejs-sdk": "^2.0.0",
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1",
+    "zod": "^3.22.4",
+    "winston": "^3.11.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.2",
+    "ts-node-dev": "^2.0.0",
+    "ts-node": "^10.9.2"
+  },
+  "keywords": ["farcaster", "base", "blockchain", "agentkit", "web3"],
+  "author": "isaaco3349",
+  "license": "MIT"
+}
