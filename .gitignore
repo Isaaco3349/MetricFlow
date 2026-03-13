@@ -8,10 +8,6 @@
 wallet_data.json
 data/
 
-# Node
-node_modules/
-npm-debug.log*
-
 # Build output
 dist/
 build/

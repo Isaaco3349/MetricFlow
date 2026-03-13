@@ -1,0 +1,10 @@
+import type { BytesLike } from "ethers";
+export declare const makeArray: <T>(len: number, getValue: (i: number) => T) => T[];
+export declare const chunk: <T>(array: T[], size: number) => T[][];
+export declare const bufferToHex: (buf: Buffer) => string;
+export declare const hexToBuffer: (value: string) => Buffer<ArrayBuffer>;
+export declare const bufferKeccak: (value: BytesLike) => Buffer<ArrayBuffer>;
+export declare const hashConcat: (arr: BytesLike[]) => Buffer<ArrayBuffer>;
+export declare const fillArray: <T>(arr: T[], length: number, value: T) => T[];
+export declare const getRoot: (elements: (Buffer | string)[], hashLeaves?: boolean) => Buffer<ArrayBufferLike>;
+export declare const getNextLayer: (elements: Buffer[]) => Buffer<ArrayBuffer>[];

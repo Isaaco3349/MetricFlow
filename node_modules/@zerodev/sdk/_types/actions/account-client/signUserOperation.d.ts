@@ -1,0 +1,6 @@
+import type { Chain, Client, Transport } from "viem";
+import { type PrepareUserOperationParameters, type PrepareUserOperationReturnType, type SmartAccount } from "viem/account-abstraction";
+export type SignUserOperationParameters<account extends SmartAccount | undefined = SmartAccount | undefined, accountOverride extends SmartAccount | undefined = SmartAccount | undefined, calls extends readonly unknown[] = readonly unknown[]> = PrepareUserOperationParameters<account, accountOverride, calls>;
+export type SignUserOperationReturnType = PrepareUserOperationReturnType;
+export declare function signUserOperation<account extends SmartAccount | undefined = SmartAccount | undefined, chain extends Chain | undefined = Chain | undefined, accountOverride extends SmartAccount | undefined = undefined, calls extends readonly unknown[] = readonly unknown[]>(client: Client<Transport, chain, account>, args: SignUserOperationParameters<account, accountOverride, calls>): Promise<SignUserOperationReturnType>;
+//# sourceMappingURL=signUserOperation.d.ts.map

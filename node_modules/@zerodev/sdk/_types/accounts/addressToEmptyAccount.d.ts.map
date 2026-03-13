@@ -1,0 +1,1 @@
+{"version":3,"file":"addressToEmptyAccount.d.ts","sourceRoot":"","sources":["../../accounts/addressToEmptyAccount.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,OAAO,EAAE,YAAY,EAAE,MAAM,MAAM,CAAA;AAGjD,MAAM,MAAM,YAAY,GAAG,YAAY,CAAC,OAAO,CAAC,CAAA;AAChD,wBAAgB,qBAAqB,CAAC,OAAO,EAAE,OAAO,GAAG,YAAY,CAmBpE"}
