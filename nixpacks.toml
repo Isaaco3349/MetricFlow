@@ -5,4 +5,4 @@ cmds = ["npm install --legacy-peer-deps"]
 cmds = []
 
 [start]
-cmd = "npm start"
+cmd = "npx ts-node src/index.ts"
