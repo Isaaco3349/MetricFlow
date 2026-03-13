@@ -1,16 +1,8 @@
-import {
-  CdpWalletProvider,
-} from "@coinbase/agentkit";
+import { CdpEvmWalletProvider } from "@coinbase/agentkit";
 import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
 
-// ============================================================
-// ERC-8021 Builder Attribution
-// This suffix is appended to every transaction MetricFlow sends.
-// It attributes the transaction to your Builder Code on Base,
-// earning you credit on the Base leaderboard and future rewards.
-// ============================================================
 const BUILDER_CODE = "bc_5s50punj";
 const ERC_8021_MARKER = "8021";
 
@@ -23,30 +15,33 @@ function buildDataSuffix(builderCode: string): `0x${string}` {
 const DATA_SUFFIX = buildDataSuffix(BUILDER_CODE);
 console.log("ERC-8021 data suffix ready:", DATA_SUFFIX);
 
-// ============================================================
 const WALLET_DATA_FILE = "./data/wallet_data.json";
-let walletProvider: CdpWalletProvider | null = null;
+let walletProvider: CdpEvmWalletProvider | null = null;
 
-export async function initializeWallet(): Promise<CdpWalletProvider> {
+export async function initializeWallet(): Promise<CdpEvmWalletProvider> {
   if (walletProvider) return walletProvider;
 
-  console.log("Initializing CDP wallet...", process.env.NETWORK_ID || "base-sepolia");
+  console.log("Initializing CDP EVM Wallet...", process.env.NETWORK_ID || "base-sepolia");
 
-  let walletDataStr: string | undefined = process.env.WALLET_DATA || undefined;
+  let savedAddress: `0x${string}` | undefined = undefined;
 
-  if (!walletDataStr && fs.existsSync(WALLET_DATA_FILE)) {
-    walletDataStr = fs.readFileSync(WALLET_DATA_FILE, "utf-8");
-    console.log("Loaded wallet from local file");
+  if (fs.existsSync(WALLET_DATA_FILE)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(WALLET_DATA_FILE, "utf-8"));
+      savedAddress = data.address as `0x${string}`;
+      console.log("Loaded wallet address from local file:", savedAddress);
+    } catch {
+      console.log("No existing wallet found, creating new one...");
+    }
   }
 
-  walletProvider = await CdpWalletProvider.configureWithWallet({
-    apiKeyName: process.env.CDP_API_KEY_NAME!,
-    apiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY!,
+  walletProvider = await CdpEvmWalletProvider.configureWithWallet({
+    apiKeyId: process.env.CDP_API_KEY_NAME!,
+    apiKeySecret: process.env.CDP_API_KEY_PRIVATE_KEY!,
     networkId: process.env.NETWORK_ID || "base-sepolia",
-    cdpWalletData: walletDataStr,
+    address: savedAddress,
   });
 
-  // Persist wallet
   const dataDir = "./data";
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
   const exportedData = await walletProvider.exportWallet();
@@ -54,12 +49,12 @@ export async function initializeWallet(): Promise<CdpWalletProvider> {
   console.log("Wallet persisted to", WALLET_DATA_FILE);
 
   const address = await walletProvider.getAddress();
-  console.log("✅ Wallet ready:", address);
-  console.log("🌐 Network:", process.env.NETWORK_ID || "base-sepolia");
+  console.log("Wallet ready:", address);
+  console.log("Network:", process.env.NETWORK_ID || "base-sepolia");
 
   if ((process.env.NETWORK_ID || "base-sepolia") === "base-sepolia") {
-    console.log("💡 Fund your testnet wallet at: https://portal.cdp.coinbase.com/products/faucet");
-    console.log("📬 Wallet address:", address);
+    console.log("Fund your testnet wallet at: https://portal.cdp.coinbase.com/products/faucet");
+    console.log("Wallet address:", address);
   }
 
   return walletProvider;
@@ -71,32 +66,24 @@ export async function sendReward(
 ): Promise<string> {
   const provider = await initializeWallet();
 
-  console.log("Sending reward...", {
-    to: toAddress,
-    amountWei: amountWei.toString(),
-    erc8021: DATA_SUFFIX,
-  });
-
   if (process.env.DRY_RUN === "true") {
-    console.log("🧪 DRY RUN — transaction not sent");
+    console.log("DRY RUN - transaction not sent");
     return "dry-run-tx-hash";
   }
 
-  // Every transaction includes the ERC-8021 data suffix
-  // This attributes the transaction to MetricFlow on Base leaderboard
   const tx = await provider.sendTransaction({
     to: toAddress as `0x${string}`,
     value: amountWei,
     data: DATA_SUFFIX,
   });
 
-  console.log("✅ Reward sent with ERC-8021 attribution!", {
+  console.log("Reward sent with ERC-8021 attribution!", {
     txHash: tx,
     to: toAddress,
     builderCode: BUILDER_CODE,
   });
 
-  return tx;
+  return tx as string;
 }
 
 export async function getWalletAddress(): Promise<string> {

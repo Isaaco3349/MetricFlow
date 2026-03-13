@@ -1,8 +1,37 @@
+# Environment & Secrets — NEVER commit these
 .env
 .env.local
-node_modules/
-dist/
+*.pem
+*.key
+
+# Wallet data — contains private keys
+wallet_data.json
 data/
-*.log
-.DS_Store
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Build output
+dist/
+build/
+
+# TypeScript cache
 *.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Test coverage
+coverage/
