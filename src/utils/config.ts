@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import { z } from "zod";
-import { MetricFlowConfig, NetworkId } from "../types";
-
+import { MetricFlowConfig, NetworkId } from "../types/index.js";
 dotenv.config();
 
 // ---- Validate required environment variables ----

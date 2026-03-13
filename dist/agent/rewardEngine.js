@@ -1,7 +1,7 @@
-import { sendReward } from "./wallet";
-import { addToAllowlist, getAllowlistSize, } from "../services/allowlist";
-import { config } from "../utils/config";
-import logger from "../utils/logger";
+import { sendReward } from "./wallet.js";
+import { addToAllowlist, getAllowlistSize } from "../services/allowlist.js";
+import { config } from "../utils/config.js";
+import logger from "../utils/logger.js";
 // ---- Deduplication: track events already processed this session ----
 const processedEventIds = new Set();
 /**

@@ -1,14 +1,11 @@
 import express, { Request, Response, NextFunction } from "express";
-import { env } from "../utils/config";
-import logger from "../utils/logger";
-import {
-  verifyNeynarWebhook,
-  parseReactionEvent,
-} from "../services/neynar";
-import { processEngagementEvent } from "../agent/rewardEngine";
-import { getAllowlistSize } from "../services/allowlist";
-import { getWalletAddress } from "../agent/wallet";
-import { NeynarWebhookPayload } from "../types";
+import { env } from "../utils/config.js";
+import logger from "../utils/logger.js";
+import { verifyNeynarWebhook, parseReactionEvent } from "../services/neynar.js";
+import { processEngagementEvent } from "../agent/rewardEngine.js";
+import { getAllowlistSize } from "../services/allowlist.js";
+import { getWalletAddress } from "../agent/wallet.js";
+import { NeynarWebhookPayload } from "../types/index.js";
 
 export function createServer() {
   const app = express();

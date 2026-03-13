@@ -1,9 +1,8 @@
 import fs from "fs";
 import path from "path";
-import { AllowlistEntry, EngagementEvent } from "../types";
-import logger from "../utils/logger";
-import { config } from "../utils/config";
-
+import { AllowlistEntry, EngagementEvent } from "../types/index.js";
+import logger from "../utils/logger.js";
+import { config } from "../utils/config.js";
 // ---- In-memory cache + persistence ----
 
 let allowlist: Map<string, AllowlistEntry> = new Map(); // key = ethAddress

@@ -1,13 +1,8 @@
-import { EngagementEvent, RewardResult } from "../types";
-import { sendReward } from "./wallet";
-import {
-  addToAllowlist,
-  isAllowlisted,
-  getAllowlistSize,
-} from "../services/allowlist";
-import { config } from "../utils/config";
-import logger from "../utils/logger";
-
+import { EngagementEvent, RewardResult } from "../types/index.js";
+import { sendReward } from "./wallet.js";
+import { addToAllowlist, isAllowlisted, getAllowlistSize } from "../services/allowlist.js";
+import { config } from "../utils/config.js";
+import logger from "../utils/logger.js";
 // ---- Deduplication: track events already processed this session ----
 const processedEventIds = new Set<string>();
 

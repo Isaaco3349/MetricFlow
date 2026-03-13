@@ -1,13 +1,8 @@
 import { NeynarAPIClient, Configuration } from "@neynar/nodejs-sdk";
 import crypto from "crypto";
-import { env } from "../utils/config";
-import logger from "../utils/logger";
-import {
-  NeynarWebhookPayload,
-  ReactionData,
-  EngagementEvent,
-  FarcasterUser,
-} from "../types";
+import { env } from "../utils/config.js";
+import logger from "../utils/logger.js";
+import { NeynarWebhookPayload, ReactionData, EngagementEvent, FarcasterUser } from "../types/index.js";} from "../types";
 
 // ---- Neynar Client Singleton ----
 

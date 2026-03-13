@@ -1,10 +1,10 @@
 import express from "express";
-import { env } from "../utils/config";
-import logger from "../utils/logger";
-import { verifyNeynarWebhook, parseReactionEvent, } from "../services/neynar";
-import { processEngagementEvent } from "../agent/rewardEngine";
-import { getAllowlistSize } from "../services/allowlist";
-import { getWalletAddress } from "../agent/wallet";
+import { env } from "../utils/config.js";
+import logger from "../utils/logger.js";
+import { verifyNeynarWebhook, parseReactionEvent } from "../services/neynar.js";
+import { processEngagementEvent } from "../agent/rewardEngine.js";
+import { getAllowlistSize } from "../services/allowlist.js";
+import { getWalletAddress } from "../agent/wallet.js";
 export function createServer() {
     const app = express();
     // ---- Raw body capture (required for HMAC verification) ----
