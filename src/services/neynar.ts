@@ -84,7 +84,7 @@ export function parseReactionEvent(
 
 export async function getUserByFid(fid: number): Promise<FarcasterUser | null> {
   try {
-    const response = await neynarClient.fetchBulkUsers([fid]);
+    const response = await neynarClient.fetchBulkUsers({ fids: [fid] });
     return (response.users?.[0] as unknown as FarcasterUser) ?? null;
   } catch (err) {
     logger.error("Failed to fetch Farcaster user", { fid, err });
