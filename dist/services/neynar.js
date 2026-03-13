@@ -1,30 +1,21 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.neynarClient = void 0;
-exports.verifyNeynarWebhook = verifyNeynarWebhook;
-exports.parseReactionEvent = parseReactionEvent;
-exports.getUserByFid = getUserByFid;
-const nodejs_sdk_1 = require("@neynar/nodejs-sdk");
-const crypto_1 = __importDefault(require("crypto"));
-const config_1 = require("../utils/config");
-const logger_1 = __importDefault(require("../utils/logger"));
+import { NeynarAPIClient, Configuration } from "@neynar/nodejs-sdk";
+import crypto from "crypto";
+import { env } from "../utils/config";
+import logger from "../utils/logger";
 // ---- Neynar Client Singleton ----
-const neynarConfig = new nodejs_sdk_1.Configuration({ apiKey: config_1.env.NEYNAR_API_KEY });
-exports.neynarClient = new nodejs_sdk_1.NeynarAPIClient(neynarConfig);
+const neynarConfig = new Configuration({ apiKey: env.NEYNAR_API_KEY });
+export const neynarClient = new NeynarAPIClient(neynarConfig);
 // ---- Webhook Signature Verification ----
 /**
  * Verifies that an incoming webhook request is genuinely from Neynar.
  * Always verify — never skip this in production.
  */
-function verifyNeynarWebhook(rawBody, signature) {
-    const hmac = crypto_1.default.createHmac("sha512", config_1.env.NEYNAR_WEBHOOK_SECRET);
+export function verifyNeynarWebhook(rawBody, signature) {
+    const hmac = crypto.createHmac("sha512", env.NEYNAR_WEBHOOK_SECRET);
     hmac.update(rawBody);
     const digest = hmac.digest("hex");
     try {
-        return crypto_1.default.timingSafeEqual(Buffer.from(signature, "hex"), Buffer.from(digest, "hex"));
+        return crypto.timingSafeEqual(Buffer.from(signature, "hex"), Buffer.from(digest, "hex"));
     }
     catch {
         return false;
@@ -35,9 +26,9 @@ function verifyNeynarWebhook(rawBody, signature) {
  * Converts a raw Neynar reaction webhook payload into a normalized
  * MetricFlow EngagementEvent.
  */
-function parseReactionEvent(payload) {
+export function parseReactionEvent(payload) {
     if (payload.type !== "reaction.created") {
-        logger_1.default.debug("Ignoring non-reaction webhook", { type: payload.type });
+        logger.debug("Ignoring non-reaction webhook", { type: payload.type });
         return null;
     }
     const data = payload.data;
@@ -48,7 +39,7 @@ function parseReactionEvent(payload) {
     const ethAddresses = reactor.verified_addresses?.eth_addresses ?? [];
     const reactorEthAddress = ethAddresses.length > 0 ? ethAddresses[0] : null;
     if (!reactorEthAddress) {
-        logger_1.default.warn("Reactor has no verified ETH address — cannot reward", {
+        logger.warn("Reactor has no verified ETH address — cannot reward", {
             fid: reactor.fid,
             username: reactor.username,
         });
@@ -65,13 +56,13 @@ function parseReactionEvent(payload) {
     };
 }
 // ---- Lookup User by FID ----
-async function getUserByFid(fid) {
+export async function getUserByFid(fid) {
     try {
-        const response = await exports.neynarClient.fetchBulkUsers({ fids: [fid] });
+        const response = await neynarClient.fetchBulkUsers({ fids: [fid] });
         return response.users?.[0] ?? null;
     }
     catch (err) {
-        logger_1.default.error("Failed to fetch Farcaster user", { fid, err });
+        logger.error("Failed to fetch Farcaster user", { fid, err });
         return null;
     }
 }

@@ -8,11 +8,9 @@ dotenv.config();
 
 const EnvSchema = z.object({
   NEYNAR_API_KEY: z.string().min(1, "NEYNAR_API_KEY is required"),
-  NEYNAR_WEBHOOK_SECRET: z.string().min(1, "NEYNAR_WEBHOOK_SECRET is required"),
-  CDP_API_KEY_NAME: z.string().min(1, "CDP_API_KEY_NAME is required"),
-  CDP_API_KEY_PRIVATE_KEY: z
-    .string()
-    .min(1, "CDP_API_KEY_PRIVATE_KEY is required"),
+  NEYNAR_WEBHOOK_SECRET: z.string().optional().default(""),         
+  CDP_API_KEY_ID: z.string().min(1, "CDP_API_KEY_ID is required"),
+  CDP_API_KEY_SECRET: z.string().min(1, "CDP_API_KEY_SECRET is required"),
   NETWORK_ID: z.enum(["base", "base-sepolia"]).default("base-sepolia"),
   REWARD_AMOUNT_WEI: z.string().default("100000000000000"),
   ALLOWLIST_OUTPUT_PATH: z.string().default("./data/allowlist.json"),

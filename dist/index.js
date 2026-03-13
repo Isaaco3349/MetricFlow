@@ -1,4 +1,3 @@
-"use strict";
 /**
  * MetricFlow — Farcaster Engagement Reward Agent
  *
@@ -8,27 +7,23 @@
  *
  * Built with: Neynar (Farcaster) + Coinbase AgentKit (Base chain)
  */
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const logger_1 = __importDefault(require("./utils/logger"));
-const allowlist_1 = require("./services/allowlist");
-const wallet_1 = require("./agent/wallet");
-const server_1 = require("./webhooks/server");
+import logger from "./utils/logger";
+import { loadAllowlist } from "./services/allowlist";
+import { initializeWallet } from "./agent/wallet";
+import { startServer } from "./webhooks/server";
 async function main() {
-    logger_1.default.info("⚡ MetricFlow starting up...");
+    logger.info("⚡ MetricFlow starting up...");
     try {
         // 1. Load existing allowlist from disk
-        (0, allowlist_1.loadAllowlist)();
+        loadAllowlist();
         // 2. Initialize CDP wallet (creates or loads existing)
-        await (0, wallet_1.initializeWallet)();
+        await initializeWallet();
         // 3. Start webhook server
-        (0, server_1.startServer)();
-        logger_1.default.info("✅ MetricFlow is live and listening for Farcaster reactions");
+        startServer();
+        logger.info("✅ MetricFlow is live and listening for Farcaster reactions");
     }
     catch (err) {
-        logger_1.default.error("❌ Failed to start MetricFlow", { err });
+        logger.error("❌ Failed to start MetricFlow", { err });
         process.exit(1);
     }
 }
