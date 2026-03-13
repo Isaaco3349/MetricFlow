@@ -2,7 +2,7 @@
 cmds = ["npm install --legacy-peer-deps"]
 
 [phases.build]
-cmds = []
+cmds = ["npx tsc --skipLibCheck"]
 
 [start]
-cmd = "npx ts-node src/index.ts"
+cmd = "node dist/index.js"
