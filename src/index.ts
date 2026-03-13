@@ -8,10 +8,10 @@
  * Built with: Neynar (Farcaster) + Coinbase AgentKit (Base chain)
  */
 
-import logger from "./utils/logger";
-import { loadAllowlist } from "./services/allowlist";
-import { initializeWallet } from "./agent/wallet";
-import { startServer } from "./webhooks/server";
+import logger from "./utils/logger.js";
+import { loadAllowlist } from "./services/allowlist.js";
+import { initializeWallet } from "./agent/wallet.js";
+import { startServer } from "./webhooks/server.js";
 
 async function main() {
   logger.info("⚡ MetricFlow starting up...");
