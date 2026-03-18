@@ -2,8 +2,6 @@ import { NeynarAPIClient, Configuration } from "@neynar/nodejs-sdk";
 import crypto from "crypto";
 import { env } from "../utils/config.js";
 import logger from "../utils/logger.js";
-from;
-"../types";
 // ---- Neynar Client Singleton ----
 const neynarConfig = new Configuration({ apiKey: env.NEYNAR_API_KEY });
 export const neynarClient = new NeynarAPIClient(neynarConfig);

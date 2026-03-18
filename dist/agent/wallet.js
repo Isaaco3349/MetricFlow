@@ -1,4 +1,4 @@
-import { CdpEvmWalletProvider } from "@coinbase/agentkit";
+import { CdpV2EvmWalletProvider } from "@coinbase/agentkit";
 import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
@@ -28,19 +28,19 @@ export async function initializeWallet() {
             console.log("No existing wallet found, creating new one...");
         }
     }
-    walletProvider = await CdpEvmWalletProvider.configureWithWallet({
-        apiKeyId: process.env.CDP_API_KEY_NAME,
-        apiKeySecret: process.env.CDP_API_KEY_PRIVATE_KEY,
+    walletProvider = await CdpV2EvmWalletProvider.configureWithWallet({
+        apiKeyId: process.env.CDP_API_KEY_ID,
+        apiKeySecret: process.env.CDP_API_KEY_SECRET,
         networkId: process.env.NETWORK_ID || "base-sepolia",
         address: savedAddress,
     });
     const dataDir = "./data";
     if (!fs.existsSync(dataDir))
         fs.mkdirSync(dataDir, { recursive: true });
-    const exportedData = await walletProvider.exportWallet();
-    fs.writeFileSync(WALLET_DATA_FILE, JSON.stringify(exportedData), "utf-8");
+    const walletAddress = walletProvider.getAddress();
+    fs.writeFileSync(WALLET_DATA_FILE, JSON.stringify({ address: walletAddress }), "utf-8");
     console.log("Wallet persisted to", WALLET_DATA_FILE);
-    const address = await walletProvider.getAddress();
+    const address = walletAddress;
     console.log("Wallet ready:", address);
     console.log("Network:", process.env.NETWORK_ID || "base-sepolia");
     if ((process.env.NETWORK_ID || "base-sepolia") === "base-sepolia") {
