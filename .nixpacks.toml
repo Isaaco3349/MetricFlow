@@ -1,2 +1,5 @@
+[phases.setup]
+nixPkgs = ["nodejs_22"]
+
 [variables]
 NODE_OPTIONS = "--max-old-space-size=512"
