@@ -1,4 +1,5 @@
-import { CdpV2EvmWalletProvider } from "@coinbase/agentkit";
+import pkg from "@coinbase/agentkit";
+const { CdpV2EvmWalletProvider } = pkg;
 import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();

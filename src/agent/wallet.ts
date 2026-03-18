@@ -1,4 +1,5 @@
-import { CdpV2EvmWalletProvider } from "@coinbase/agentkit";
+import pkg from "@coinbase/agentkit";
+const { CdpV2EvmWalletProvider } = pkg as any;
 import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
@@ -16,8 +17,8 @@ const DATA_SUFFIX = buildDataSuffix(BUILDER_CODE);
 console.log("ERC-8021 data suffix ready:", DATA_SUFFIX);
 
 const WALLET_DATA_FILE = "./data/wallet_data.json";
-let walletProvider: CdpV2EvmWalletProvider | null = null;
-export async function initializeWallet(): Promise<CdpV2EvmWalletProvider> {
+let walletProvider: any | null = null;
+export async function initializeWallet(): Promise<any> {
   if (walletProvider) return walletProvider;
 
   console.log("Initializing CDP EVM Wallet...", process.env.NETWORK_ID || "base-sepolia");
