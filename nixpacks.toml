@@ -1,8 +1,0 @@
-[phases.install]
-cmds = ["npm install --legacy-peer-deps"]
-
-[phases.build]
-cmds = ["npx tsc -p tsconfig.json"]
-
-[start]
-cmd = "node dist/index.js"
