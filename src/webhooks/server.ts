@@ -18,7 +18,10 @@ export function createServer() {
       },
     })
   );
-
+// ---- Serve index.html for Base.dev metatag verification ----
+app.get("/", (_req: Request, res: Response) => {
+  res.sendFile("index.html", { root: "." });
+});
   // ---- Health check ----
   app.get("/health", async (_req: Request, res: Response) => {
     try {
